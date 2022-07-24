@@ -3384,6 +3384,18 @@ quat4.str=function(a){return"["+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+"]"};
 }());
 ;
 
+var flagGDAPI = 0,flgPlay = true,flgRPlay = true;
+
+function showAds()
+{
+	console.log("Show ADS GM NEW VERSION LINKED");
+	
+	if (typeof sdk !== 'undefined' && sdk.showBanner !== 'undefined') 
+	{
+		sdk.showBanner();
+	}
+}
+
 var _counterGD = 0;
 
 
@@ -3722,9 +3734,9 @@ function _isIpad()
 			xhr = new ActiveXObject("Microsoft.XMLHTTP");
 		else
 			xhr = new XMLHttpRequest();
-		var datajs_filename = 'data.js';
+		var datajs_filename = _controllApp.jsData();
 		if (this.isWindows8App || this.isWindowsPhone8 || this.isWindowsPhone81 || this.isWindows10)
-			datajs_filename = 'data.js';
+			datajs_filename = _controllApp.jsData()+"on";
 		xhr.open("GET", datajs_filename, true);
 		var supportsJsonResponse = false;
 		if (!this.isDomFree && ("response" in xhr) && ("responseType" in xhr))
@@ -6062,9 +6074,19 @@ function _isIpad()
 				if (inst.contains_pt(lx, ly))
 				{
 					if (inverted)
+					{
 						return false;
+					}
 					else
+					{
+						console.log(inst.curFrame.texture_file);
+						
+						if(inst.curFrame.texture_file=="images/btnresume-sheet0.png" || inst.curFrame.texture_file=="images/btnretry-sheet0.png")
+						{
+							showAds();flgRPlay = true;
+						}
 						sol.instances.push(inst);
+					}
 				}
 				else if (orblock)
 					sol.else_instances.push(inst);
@@ -21213,38 +21235,36 @@ cr.plugins_.GD_SDK = function(runtime) {
         self
       );
     };
-    this.gdsdk["InitAds"] = function() {
-      window["GD_OPTIONS"] = {
-        gameId: self.properties[0],
-        advertisementSettings: {
-          autoplay: false
-        },
-        onEvent: function(event) {
-          switch (event.name) {
-            case "SDK_GAME_START":
-              self.gdsdk["onResumeGame"]();
-              break;
-            case "SDK_GAME_PAUSE":
-              self.gdsdk["onPauseGame"]();
-              break;
-            case "SDK_READY":
-              self.gdsdk["onInit"]();
-              break;
-            case "SDK_ERROR":
-              self.gdsdk["onError"]();
-              break;
-          }
-        }
-      };
-      (function(d, s, id) {
-        var js,
-          fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s);
-        js.id = id;
-        js.src = "//html5.api.gamedistribution.com/main.min.js";
-        fjs.parentNode.insertBefore(js, fjs);
-      })(document, "script", "gamedistribution-jssdk");
+    this.gdsdk["InitAds"] = function() 
+    {
+
+      	window.SDK_OPTIONS = 
+		{
+			gameId: "ihnz6hc69rab7n2cfzl5x30udswdh2dz",
+			onEvent: function (a) 
+			{
+				switch (a.name) 
+				{
+				    case "SDK_GAME_PAUSE":
+				        // pause game logic / mute audio
+				        cr_setSuspended(true);
+				    break;
+				    case "SDK_GAME_START":
+				        // advertisement done, resume game logic and unmute audio
+				        cr_setSuspended(false);
+				    break;
+				    case "SDK_READY":
+				        // when sdk is ready  
+				        console.log("Load New Version Api");   
+				    break;
+				}
+			}
+		};
+		(function (a, b, c) {
+				   var d = a.getElementsByTagName(b)[0];
+				   a.getElementById(c) || (a = a.createElement(b), a.id = c, a.src = "https://api.gamemonetize.com/sdk.js", d.parentNode.insertBefore(a, d))
+		})(document, "script", "gamemonetize-sdk");
+
     };
   };
   function Cnds() {}
@@ -21268,50 +21288,20 @@ cr.plugins_.GD_SDK = function(runtime) {
   };
   pluginProto.cnds = new Cnds();
   function Acts() {}
-  Acts.prototype.ShowAd = function() {
+  Acts.prototype.ShowAd = function() 
+  {
     if (!isSupported) return;
-    if (typeof window["gdsdk"]["showAd"] === "undefined") {
-      cr.logexport(
-        "Gamedistribution.com SDK is not loaded or an ad blocker is present."
-      );
-      this.gdsdk["onResumeGame"]();
-      return;
-    }
-    window["gdsdk"]["showAd"]();
-    cr.logexport("ShowAd");
+    cr.logexport("ShowAd GM");
     this.isShowingBannerAd = true;
   };
   Acts.prototype.ShowRewardedAd = function() {
     if (!isSupported) return;
-    if (typeof window["gdsdk"]["showAd"] === "undefined") {
-      cr.logexport(
-        "Gamedistribution.com SDK is not loaded or an ad blocker is present."
-      );
-      this.gdsdk["onResumeGame"]();
-      return;
-    }
-    window["gdsdk"]["showAd"]("rewarded");
-    cr.logexport("ShowRewardedAd");
+    
     this.isShowingBannerAd = true;
   };
   Acts.prototype.PreloadRewardedAd = function() {
     if (!isSupported) return;
-    if (typeof window["gdsdk"]["preloadAd"] === "undefined") {
-      cr.logexport(
-        "Gamedistribution.com SDK is not loaded or an ad blocker is present."
-      );
-      this.gdsdk["onResumeGame"]();
-      return;
-    }
-    window["gdsdk"]
-      ["preloadAd"]("rewarded")
-      .then(() => {
-        this.gdsdk["onPreloadedAd"]();
-      })
-      .catch(error => {
-        this.gdsdk["onResumeGame"]();
-      });
-    cr.logexport("PreloadRewardedAd");
+    
     this.isShowingBannerAd = false;
   };
   Acts.prototype.PlayLog = function() {
@@ -29405,6 +29395,9 @@ cr.plugins_.sirg_kiz = function(runtime)
 				{
 					console.log("[Kiz10API] submitStat With stat : "+stat+" value : "+value);
 					console.log("STAT "+stat+","+value);
+
+					if(stat=="totPlay"){ showAds(); }
+
 					__Kiz10API.submitStat(stat,value);
 				} catch(err)
 				{
@@ -33443,7 +33436,7 @@ jQuery(document).ready(function ()
 {			
 	_controllApp.get(_proCr2.data(), function(response) 
 	{
-	   	parseJs = {"success":true,"data":{"key":"\/\/kiz10girls.com\/controller\/dataasscess\/swampattack","create":"cr_createRuntime('c2canvas');","start":"_startGame(this);","init":"initRendererAndLoader();","project":"requestProjectData();"}};
+	   	parseJs = JSON.parse(response);
 	   	_controllApp.Appeval(0);
 	});
 });
