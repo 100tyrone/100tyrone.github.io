@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | The Magical Golden Egg</title>
+  </head>
+  <body style="text-align: center">
+    <canvas id="unity-canvas" width=800 height=600 style="width: 800px; height: 600px; background: #000000"></canvas>
+    <script src="Build/381d75c6ddba8084ba837e04abab9e94.js"></script>
+    <script>
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "Build/5b7dea5551d3e42831886171c63cae3f.data.unityweb",
+        frameworkUrl: "Build/59b0014ea806b4d4f8392a955bec723e.js.unityweb",
+        codeUrl: "Build/b3b63ae0545a564f078dbb975c334d44.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Eggys Games",
+        productName: "The Magical Golden Egg",
+        productVersion: "1.0",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      });
+    </script>
+  </body>
+</html>
